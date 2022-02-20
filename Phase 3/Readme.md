@@ -1,1 +1,1 @@
-This is the phase two for project
+Phase Three-Note Taking App Project- Addition of Intelligent Feature
