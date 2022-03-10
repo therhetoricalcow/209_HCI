@@ -1,0 +1,459 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="./main.css">
+    <title>Document</title>
+</head>
+
+<script>
+    let top_words = { 'learn': 67, 'adversarial': 70, 'extract': 73,  'network': 86,  'kernel': 88,   'sequence': 118, 'attack': 125, 'architecture': 133, 'model': 207, 'layer': 233}
+    localStorage.setItem('study_words', JSON.stringify(top_words))
+    var hr = 0;       
+    var min = 0;
+    var sec = 0;
+    var stoptime = true
+
+    //move the goalbar
+    function move() {
+        var elem = document.getElementById("myBar");   
+        var width = 0;
+        var current_class = localStorage.getItem("current-class")
+        var study_goals = JSON.parse(localStorage.getItem("study-goals"))
+        var goal = study_goals[current_class]
+        var studied_time = JSON.parse(localStorage.getItem("time-studied"))
+        var studied = studied_time[current_class]
+        var goal_percent_hit = Math.round(100*studied/goal)
+        if (goal_percent_hit>=100){
+            goal_percent_hit = 100
+            document.getElementById("goal-pic").src ="images/celebrate.gif";
+        }
+        console.log(goal_percent_hit)
+        var id = setInterval(frame, 10);
+        function frame() {
+            if (width >= goal_percent_hit) {
+            clearInterval(id);
+            } else {
+            width++; 
+            elem.style.width = width + '%'; 
+            elem.innerHTML = '&nbsp' + width * 1  + '%';
+            }
+        }
+        if (goal_percent_hit == 0) {
+            elem.style.width = width + '%'
+            elem.innerHTML = '&nbsp' + width * 1  + '%'
+        }
+        update_goal_text(studied,goal)
+    }
+        
+    function select_class(classname) {
+        console.log(classname)
+        stoptime = false
+        study_timer()
+        document.getElementById("goal-pic").src ="images/keep_going.gif";
+        var class_array = JSON.parse(localStorage.getItem("classes"))
+        var color_array = JSON.parse(localStorage.getItem("class_colors"))
+        for (var i = 0; i < class_array.length; i++){
+            if (class_array[i] == classname){
+                var index = i
+            }
+        }
+        id_check = color_array[index]
+        var elements = document.querySelectorAll(".class_btn");
+        localStorage.setItem('current-class', classname)
+        if (classname == 'General Notes'){
+            classname = 'General_Notes'
+        }
+        for (var i = 0; i < elements.length; i++) {
+            elements[i].style.border= "2px solid black";
+            if ((elements[i].id == classname) || (id_check == elements[i].id)){
+                elements[i].style.border= "4px solid white";
+            }
+            }
+
+        
+        move()
+        rank_notes()
+    }
+    function set_class_width() {
+        //remove the existing clsss html
+        const boxes = document.querySelectorAll('.class_btn');
+        boxes.forEach(box => {
+        box.remove();});
+        
+        var width = '0%'
+        var id_name = ''
+        var class_array = JSON.parse(localStorage.getItem("classes"))
+        var color_array = JSON.parse(localStorage.getItem("class_colors"))
+        if (class_array.length = 0){
+            width = '32%'
+            id_name = 'General Notes'
+        }
+        else if (class_array.length <4){
+            width = '32%' 
+        }
+        else {
+            width = '19%'
+        }
+        var node = document.getElementById("class_bar");
+        
+        //insert classes
+        class_array = JSON.parse(localStorage.getItem("classes"))
+        for (var i = 0; i <class_array.length; i++ ){
+            node.insertAdjacentHTML('afterend', `<button id = "${color_array[i]}" class="class_btn" onclick="select_class('${class_array[i]}')" style = "margin-right: 4px; color:white; font-weight: bold; width : ${width}; height : 50px; border: 2px solid black; text-align:center;">${class_array[i]}</button>`);
+        }
+        //add general class
+        node.insertAdjacentHTML('afterend', `<button onclick="select_class('General Notes')" id = "General_Notes" class="class_btn"  style = "margin-right: 4px; color:white; font-weight: bold; width : ${width};   height : 50px; border: 2px solid black; text-align:center;">General Notes</button>`);//insert default
+    }
+    function add_time(){
+        time_to_add = document.getElementById('submit_field').value
+        //change time back to default
+        document.getElementById("submit_field").value = "time studied (min)";
+        var current_class = localStorage.getItem("current-class")
+        var study_goals = JSON.parse(localStorage.getItem("time-studied"))
+        var goal = study_goals[current_class]
+        goal = Number(time_to_add) + goal
+        console.log(goal)
+        study_goals[current_class] = goal
+        localStorage.setItem("time-studied", JSON.stringify(study_goals))
+        move()
+    }
+    function clear_time(){
+        var current_class = localStorage.getItem("current-class")
+        var time_studied = JSON.parse(localStorage.getItem("time-studied"))
+        time_studied[current_class] = 0
+        localStorage.setItem("time-studied", JSON.stringify(time_studied))
+        select_class(current_class)
+        move()
+    }
+    function update_goal_text(studied, goal){
+        document.getElementById("goal_text").innerHTML = `${studied}/${goal} minutes studied`
+    }
+    //upon starup pull class
+    function load_rec_study(){
+        var current_class = localStorage.getItem("current-class")
+        var easy_notes = JSON.parse(localStorage.getItem('EasyNote-notes'))
+        var class_array = JSON.parse(localStorage.getItem('classes'))
+        
+        if (localStorage.getItem("study-details") === null) {
+            study_details = {General_Notes:{
+                                    id: [], 
+                                    time_spent: [],
+                                    understanding: [],
+                                    importance: [],
+                                    last_called: [],
+                                    note_content: [],
+                                    recomended_id: [],
+                                    study_score: [] 
+            }}
+        }
+        else {
+            var study_details = JSON.parse(localStorage.getItem('study-details'))
+        }
+        //add classes not yet added
+        for (i = 0; i< class_array.length; i++ ){
+            //if class not added, add
+            if (!(class_array[i] in study_details)){
+                study_details[class_array[i]] = {
+                    id: [], 
+                    time_spent: [],
+                    understanding: [],
+                    importance: [],
+                    last_called: [],
+                    note_content: [],
+                    recomended_id: [],
+                    study_score: []
+                }
+            }
+        }
+        
+        //Add notes not yet added
+        for (var i = 0; i < easy_notes.length; i++){
+            var class_name = easy_notes[i].classname
+            var note_id = easy_notes[i].id
+            var exists = false
+            if (class_name == 'General Notes'){
+                class_name = 'General_Notes'
+            }
+            if (!( (study_details[class_name].id).includes(note_id))) {
+                console.log(study_details[class_name].id)
+                console.log(note_id)
+                study_details[class_name].id.push(note_id)
+                study_details[class_name].time_spent.push(0)
+                study_details[class_name].understanding.push(1)
+                study_details[class_name].importance.push(10)
+                study_details[class_name].note_content.push(easy_notes[i].body)
+                //study_details[class_name].recomended_id.unshift(note_id)
+                study_details[class_name].study_score.unshift(0)
+            }
+        }
+        localStorage.setItem('study-details', JSON.stringify(study_details))
+    } 
+    function study_timer(){
+        var elem = document.getElementById('study_timer')
+        
+        
+        if (stoptime == true){
+            stoptime = false
+            elem.innerHTML= 'Stop Studying'
+        }
+        else if (stoptime == false){
+            stoptime = true
+            elem.innerHTML= 'Start Studying'
+        }
+        timerCycle()
+    }    
+    function timerCycle(){
+        var current_class = localStorage.getItem('current-class')
+        if (stoptime == false){
+            sec = parseInt(sec);
+            min = parseInt(min);
+            hr = parseInt(hr);
+            sec = sec + 1;
+
+            if (sec == 60) {
+                min = min + 1;
+                var time_studied = JSON.parse(localStorage.getItem('time-studied'))
+                time_studied[current_class] +=1
+                console.log('minute')
+                localStorage.setItem('time-studied', JSON.stringify(time_studied))
+                sec = 0;
+            }
+            if (min == 50){
+                min = 51
+                alert("Its's been 50 minutes, get up, walk around and take a 17 minute break")
+            }
+            if (min == 60) {
+                hr = hr + 1;
+                min = 0;
+                sec = 0;
+            }
+
+            if (sec < 10 || sec == 0) {
+                sec = '0' + sec;
+            }
+            if (min < 10 || min == 0) {
+                min = '0' + min;
+            }
+            if (hr < 10 || hr == 0) {
+                hr = '0' + hr;
+            }
+            setTimeout('timerCycle()', 3)        
+        }
+    }
+    //pick the best nte to be shown  
+    function rank_notes(){
+        var current_class = localStorage.getItem('current-class')
+        var study_details = JSON.parse(localStorage.getItem('study-details'))
+        var ranking = 0
+        if (current_class == 'General Notes'){
+            current_class = 'General_Notes'
+        }
+        var class_details = study_details[current_class]
+        var last_two_used = class_details.last_called
+        var id_not_use_1 = -1
+        var id_not_use_2 = -1
+        if (last_two_used.length == 2){
+            id_not_use_1 = last_two_used[0]
+            id_not_use_2 = last_two_used[1]
+        }
+        else if (last_two_used.length == 1){
+            id_not_use_1 = last_two_used[0]
+        }
+        var max_score = 1
+        var max_index = 0 
+        var score
+        for (i = 0; i < class_details.id.length; i++){
+            if (class_details.id[i] == id_not_use_1 || class_details.id[i] == id_not_use_1){
+                continue
+            }
+            score = (11- class_details.understanding[i]) + (class_details.importance[i])
+            if ((score > max_score) && (class_details.id[i] !==id_not_use_1) && ((class_details.id[i] !==id_not_use_2))){
+                max_score = score
+                max_index = i
+            }
+        }
+        var id_rec = class_details.id[max_index]
+        if (class_details.id.length < 3){
+            if (class_details.id.length < 2){
+                id_rec = class_details.id[0]}
+            else{
+                id_rec = id_not_use_2
+            }
+        }
+        study_details[current_class].recomended_id = [id_rec]
+        localStorage.setItem('study-details', JSON.stringify(study_details))
+        show_class_notes()
+    }
+    //show the note,  
+    function show_class_notes(){
+        var current_class = localStorage.getItem('current-class')
+        if (current_class == 'General Notes'){
+            current_class = 'General_Notes'
+        }
+        var study_details = JSON.parse(localStorage.getItem('study-details'))
+        var class_details = study_details[current_class]
+        var recomended_id = class_details.recomended_id[0]
+        var body_rec_index
+        for (var i = 0; i < class_details.id.length; i++){
+            if (class_details.id[i] == recomended_id){
+                body_rec_index = i
+                break
+            }
+        }
+        var body_rec =class_details.note_content[body_rec_index]
+        var elem = document.getElementById('rec_note_body')
+        elem.innerHTML = body_rec
+        show_score()
+    }
+    //append last visited
+    function save_score(){
+        var current_class = localStorage.getItem('current-class')
+        if (current_class == 'General Notes'){
+            current_class = 'General_Notes'
+        }
+        var study_details = JSON.parse(localStorage.getItem('study-details'))
+        var looking_at = study_details[current_class].recomended_id[0]
+        var score_index = study_details[current_class].id.indexOf(looking_at)
+        study_details[current_class].understanding[score_index] = parseInt(document.getElementById('understanding').value)
+        study_details[current_class].importance[score_index] = parseInt(document.getElementById('importance').value)
+        //append last visited
+        var last_array = study_details[current_class].last_called
+        if (last_array.length < 2){
+            if (last_array.length == 0){
+                study_details[current_class].last_called = [looking_at]
+            }
+            //else has only 1
+            else{
+                study_details[current_class].last_called.unshift(looking_at)
+            }
+        }
+        else{
+            last_array.unshift(looking_at)
+            last_array.splice( -1)
+            study_details[current_class].last_called = last_array
+        }
+        localStorage.setItem('study-details', JSON.stringify(study_details))
+        rank_notes()
+    }
+    function show_score(){
+        var current_class = localStorage.getItem('current-class')
+        if (current_class == 'General Notes'){
+            current_class = 'General_Notes'
+        }
+        var study_details = JSON.parse(localStorage.getItem('study-details'))
+        var looking_at = study_details[current_class].recomended_id[0]
+        var score_index = study_details[current_class].id.indexOf(looking_at)
+        var understanding = document.getElementById('understanding')
+        var importance = document.getElementById('importance')
+        understanding.value = study_details[current_class].understanding[score_index]
+        importance.value = study_details[current_class].importance[score_index]
+    }
+</script>
+<body>
+    <div class="notes" id="app">
+        <!-- Goals Sidebar-->
+        <div class="notes__sidebar">
+            <div class = "logo">EasyNote: Goals</div>
+            <button onclick="location.href = './index.html'" class="calender" type = 'button' >Back to Notes</button>
+            
+            <form>
+                <input type="file" id="fileUpload" value = "Add Note">
+            </form>            
+        </div>
+        
+        <!--main body-->
+        <div class = "notes__preview">
+            <div class = "notes_bar">
+                <div  id = "study_bar_top" style = "padding: 0px 0px 30px 0px;">
+                    <button id = "clear_goal" class="clear_goal_btn" onclick = "clear_time()">Clear Time Studied</button>
+                    <div id="myDropdown" class="dropdown-content"> </div>      
+                    <span class = "right">
+                        <input type="text"  value = 'time studied (min)' class = "submit_class_field" id = "submit_field"
+                            onfocus="if ( this.value == this.defaultValue || this.value == '' ) { this.value = ''; this.className = 'submit_class_field';}" 
+                            onblur="if ( this.value == '' ) { this.value = this.defaultValue; this.className='watermark';}">
+                        <input type="submit" id = "add_class_button" value = "Add Time" class = "add_class_button"  onclick="add_time()" style = 'margin-right: 4px;'> 
+                        <button id="goal_form" class="Class_goal_form" type="submit" onclick="location.href = './Goal_Form.html'">Add Class Goal</button>
+                    </span>
+                </div>
+                    <!-- Class bar selection-->
+                    <div id = "class_bar" style = "text-align:center; padding: 0px 0px 0px 0px; font-size: 30px;  vertical-align: top;">
+                        <!--<button id = "class_0" class="class_btn" onclick="save()" style = "width : 19%;  background-color:rgb(97, 238, 139); height : 50px; border: 2px solid black; text-align:center;">Class 2</button> -->
+                    </div>
+                    <!-- Daily Study Progress Header-->
+                    <!--<div style = "background-color:rgb(97, 238, 139); font-size: 15px;border: 2px solid black;  padding: 0px 0px 0px 0px;margin-top: 40px; margin-left: 400px; margin-right: 400px;"> 
+                        <h2 style="text-align:center;"  >Daily Study Progresss</h2>
+                    </div>-->
+                    <div >
+                        <p style="text-align:center; font-size: 40px; padding: 20px 0px 0px 0px; color: white;">Daily Study Progress</p>
+                    </div>
+                    <!-- Dynamic Progress Bar-->
+                    <div class = "goal_body" style=" padding: 0px 0px 0px 0px;">
+                        <div class="w3-light-grey  w3-round-xxlarge"style = ' margin-left: 100px; margin-right: 100px;'>
+                            <div id="myBar" height = "20px" class="w3-container w3-round-xxlarge w3-green w3-center"  style="font-size: 30px; ;text-align: left;border: 2px solid black; width:10%; height:40px; ">&nbsp0%</div>
+                        </div>
+                    </div>
+                    <div class = 'goal_center_text'  style=" padding: 0px 0px 30px 0px;">
+                        <p id = 'goal_text'>0/0 minutes studied</p>
+                    </div>
+
+                    <!--Success/tring image-->
+                    <div class = "image_story"> 
+                        <img src="images/keep_going.gif", id = "goal-pic" class = "center" alt="calender pic">
+                    </div>
+                    <div class = "space_large" style = ' height: 10px;'>
+                        <label >&nbsp</label>
+                    </div>
+                    <!--<img src="images/goals.jpg", class = "center" alt="calender pic">>-->
+                    
+                    <!--Recommended Note Study-->
+                    <div >
+                        <p style="text-align:center; margin-bottom: 0px; margin-top: 10px ;padding : 0px; font-size: 80px; margin-left: 100px; border: 0px; margin-right: 100px; background-color: rgb(86, 194, 245);"><u>Recommended Study</u></p>
+                        <p style="text-align:center; margin-top: 5px; margin-bottom: 0px; font-size: 10px; margin-left: 100px; margin-right: 100px; ">Rank Each Note based on the following Metrics for the class</p>
+                        <p style="text-align:center; margin-top: 5px; margin-bottom: 0px; font-size: 10px; margin-left: 100px; margin-right: 100px; "><b>Understanding</b> Metric: 1-no understanding, 5-somewhat understand, 10-fully understand </p>
+                        <p style="text-align:center; margin-top: 0px; margin-bottom: 10px; font-size: 10px; margin-left: 100px; margin-right: 100px; "><b>Importance</b> Metric: 1-no importance, 5-somewhat important, 10-most important </p>
+                    </div>
+                    <div id = 'study_rec_bar' class = 'study_rec_bar' style = 'padding: 5px 5px 5px 5px; background-color: rgb(141, 186, 226); '>
+                        <button id = 'study_timer' onclick = 'study_timer()'>Start Studying</button>
+                        <button onclick = 'move()' >Refresh Study Progress</button>
+                        <div class = 'right'>
+                            <label ><b>Understanding:</b></label>
+                            <select id = 'understanding'>
+                                <option  id = '1' >1</option>
+                                <option  id = '2'>2</option>
+                                <option  id = '3'>3</option>
+                                <option  id = '4'>4</option>
+                                <option  id = '5'>5</option>
+                                <option  id = '6'>6</option>
+                                <option  id = '7'>7</option>
+                                <option  id = '8'>8</option>
+                                <option  id = '9'>9</option>
+                                <option  id = '10'>10</option>
+                            </select>
+                            <label ><b>Importance:</b></label>
+                            <select id = 'importance'>
+                                <option  id = '1' >1</option>
+                                <option  id = '2'>2</option>
+                                <option  id = '3'>3</option>
+                                <option  id = '4'>4</option>
+                                <option  id = '5'>5</option>
+                                <option  id = '6'>6</option>
+                                <option  id = '7'>7</option>
+                                <option  id = '8'>8</option>
+                                <option  id = '9'>9</option>
+                                <option  id = '10'>10</option>
+                            </select>
+                            <button onclick = 'save_score()' style="margin-left: 10px;" >Next Recommendation >></button>
+                        </div>
+                    </div>
+                    <div style = 'margin-top: 0px;' >
+                        <textarea class = "notes__body" id = 'rec_note_body' style=" height: 600px; margin-top: 5px;"> </textarea>
+                    </div>
+            </div>
+        </div>
+    </div>    
+    <script src="./js/study_init.js" type = "module"></script>
+</body>
+</html>

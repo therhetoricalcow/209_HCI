@@ -1,0 +1,444 @@
+html,
+body {
+    height: 100%;
+    margin: 0;
+}
+
+.notes {
+    display: flex;
+    height: 100%;
+}
+
+.notes * {
+    font-family: sans-serif;
+}
+
+.notes__sidebar {
+    border-right: 2px solid #dddddd;
+    flex-shrink: 0;
+    overflow-y: auto;
+    padding: 0em;
+    width: 300px;
+    overflow:scroll;
+}
+.logo {
+    background: #1672c9;
+    border: none;
+    border-radius: 0px;
+    color: #020a01;
+    cursor: pointer;
+    font-size: 2em;
+    font-weight: bold;
+    margin-bottom: .3em;
+    padding: .5em;
+    width: 100%;
+}
+
+.notes__add {
+    background: #009578;
+    border: none;
+    border-radius: 20px;
+    color: #ffffff;
+    cursor: pointer;
+    font-size: 1.25em;
+    font-weight: bold;
+    margin-bottom: .5em;
+    padding: .75em;
+    width: 100%;
+}
+.notes__add:hover {
+    background: #00af8c;
+}
+
+.calender {
+    background: #19d8e6;
+    border: none;
+    border-radius: 20px;
+    color: #ffffff;
+    cursor: pointer;
+    font-size: 1.25em;
+    font-weight: bold;
+    margin-bottom: .5em;
+    padding: 0.75em 0;
+    width: 100%;
+}
+.calender:hover {
+    background: #0998d1;
+}
+
+.study {
+    background: #5ae619;
+    border: none;
+    border-radius: 20px;
+    color: #ffffff;
+    cursor: pointer;
+    font-size: 1.25em;
+    font-weight: bold;
+    margin-bottom: 1em;
+    padding: 0.75em 0;
+    width: 100%;
+
+
+}
+.study:hover {
+    background: #1c7705;
+}
+
+
+
+.notes__list-item {
+    cursor: pointer;
+}
+
+.notes__list-item--selected {
+    background: #eeeeee;
+    border-radius: 7px;
+    font-weight: bold;
+}
+
+.notes__small-updated {
+    padding: 10px;
+}
+/* color headings for notes */
+.notes__small-classname-blue{
+    font-size: 1.2em;
+    text-align: center;
+    background: #32a5f1;
+}
+.notes__small-classname-orange{
+    font-size: 1.2em;
+    text-align: center;
+    background: #d17f13;
+}
+.notes__small-classname-green{
+    font-size: 1.2em;
+    text-align: center;
+    background: #13b45b;
+}
+.notes__small-classname-yellow{
+    font-size: 1.2em;
+    text-align: center;
+    background: #d1ce2a;
+}
+.notes__small-classname-red{
+    font-size: 1.2em;
+    text-align: center;
+    background: #cf0e07;
+}
+.notes__small-classname-pink{
+    font-size: 1.2em;
+    text-align: center;
+    background: #f518f5;
+}
+.notes__small-classname-grey{
+    font-size: 1.2em;
+    text-align: center;
+    background: #727679;
+}
+
+.notes__small-title {
+    font-size: 1.2em;
+    font-weight: bold;
+}
+
+.notes__small-body {
+    padding: 0 10px;
+}
+
+.notes__small-updated {
+    color: #aaaaaa;
+    font-style: italic;
+    text-align: right;
+}
+
+.notes__preview {
+    display: flex;
+    flex-direction: column;
+    padding: 1em 1em;
+    flex-grow: 1;
+    background: #999292;
+    overflow:scroll;
+}
+
+.notes__title,
+.notes__body {
+    border: none;
+    outline: none;
+    width: 100%;
+}
+
+.notes__title {
+    background: #b0c0c2;
+    font-size: 3em;
+    font-weight: bold;
+    margin-top: .3em;
+    border-style: solid;
+    border-width: 5px;
+}
+
+.notes__body {
+    flex-grow: 1;
+    font-size: 1.2em;
+    line-height: 1.5;
+    margin-top: 2em;
+    resize: none;
+}
+/*potentially  delete below */
+.note_bar {
+    text-align: center;
+}
+
+.save_btn {
+    width: 100px;
+    height: 40px;
+    display: inline-block; 
+    }
+.delete_btn {
+    width: 100px;
+    height: 40px;
+    display: inline-block; 
+    }
+.right{
+    float:right; 
+}
+.submit_class_field{
+    height: 35px;
+    display: inline-block; 
+    }
+.watermark{
+    height: 35px;
+    color:rgb(170, 159, 159);
+    display: inline-block; 
+    }
+.add_class_button{
+    height: 40px;
+    display: inline-block; 
+    }
+
+    /* Dropdown Button */
+.dropbtn {
+    background-color: #3498DB;
+    color: white;
+    /*padding: 16px;*/
+    font-size: 16px;
+    border: none;
+    cursor: pointer;
+    display: inline-block;
+    height: 40px;
+    width: 200px;
+    border-style: solid;
+    border-width: 2px;
+    border-color: #020a01;
+  }
+  
+  /* Dropdown button on hover & focus */
+  .dropbtn:hover, .dropbtn:focus {
+    background-color: #2980B9;
+  }
+  
+  /* The container <div> - needed to position the dropdown content */
+  .dropdown {
+    position: relative;
+    display: inline-block;
+    
+  }
+  
+  /* Dropdown Content (Hidden by Default) */
+  .dropdown-content {
+    display: none;
+    position: absolute;
+    background-color: #f1f1f1;
+    min-width: 160px;
+    box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+    z-index: 1;
+  }
+  
+  /* Links inside the dropdown */
+  .dropdown-content a {
+    color: black;
+    padding: 12px 16px;
+    text-decoration: none;
+    display: block;
+  }
+  
+  /* Change color of dropdown links on hover */
+  .dropdown-content a:hover {background-color: #ddd}
+  
+  /* Show the dropdown menu (use JS to add this class to the .dropdown-content container when the user clicks on the dropdown button) */
+  .show {display:block;}
+
+  .center{
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+    width: 50%;
+    background-color:#081620;
+  }
+
+.row{
+    width: 50%;
+}
+/*Study form */
+
+
+
+.Class_goal_form{
+    background: #009578;
+    border: none;
+    border-radius: 10px;
+    color: #ffffff;
+    cursor: pointer;
+    font-size: 1em;
+    font-weight: bold;
+    margin-bottom: .5em;
+    /*padding: .75em;*/
+    width: 300px;
+    height: 40px;
+    float:right;
+    
+}
+.Class_goal_form:hover {
+    background: #00af8c;
+}
+
+form {
+    display: inline-block; 
+}
+
+.import_file{
+    height: 40
+}
+
+input[type=file]::file-selector-button {
+    /*border: 2px solid #6c5ce7;*/
+    padding: .7em .7em;
+    border-radius: .2em;
+    height: 30;
+    font-size: 3em;
+    background-color: #48a0f1;
+    /*transition: 1s;*/
+    font-size: 1em;
+  }
+  
+  input[type=file]::file-selector-button:hover {
+    background-color: #82bbf0;
+    /*border: 2px solid #00cec9;*/
+  }
+
+  .goals__sidebar {
+    border-right: 2px solid #dddddd;
+    flex-shrink: 0;
+    overflow-y: auto;
+    padding: 0em;
+    width: 329px;
+    height: 100%;
+}
+
+
+header h2 {
+    margin: 0;
+    background-color: #ECF3F3;
+    padding: 0;
+}
+
+.clear_goal_btn {
+    /*padding: 16px;*/
+    font-size: 16px;
+    border: none;
+    cursor: pointer;
+    display: inline-block;
+    height: 40px;
+    width: 200px;
+    border-style: solid;
+    border-width: 2px;
+    border-color: #020a01;
+  }
+  
+.clear_goal_btn:hover, .dropbtn:focus {
+    background-color: #999b9c;
+  }
+
+
+
+ 
+.w3-light-grey,.w3-hover-light-grey:hover,.w3-light-gray,.w3-hover-light-gray:hover{color:#000!important;background-color:#d4cccc!important}
+.w3-green,.w3-hover-green:hover{color:rgb(255, 255, 255)!important;background-color:#4CAF50!important}
+.w3-round-small{border-radius:2px}.w3-round,.w3-round-medium{border-radius:4px}.w3-round-large{border-radius:8px}.w3-round-xlarge{border-radius:16px}.w3-round-xxlarge{border-radius:32px}
+
+
+/* color headings for notes */
+#blue{
+    font-size: 1.2em;
+    text-align: center;
+    background: #34aaf8;
+}
+#orange{
+    font-size: 1.2em;
+    text-align: center;
+    background: #ffa836;
+}
+#green{
+    font-size: 1.2em;
+    text-align: center;
+    background: #26f081;
+}
+#yellow{
+    font-size: 1.2em;
+    text-align: center;
+    background: #f1ee29;
+}
+#red{
+    font-size: 1.2em;
+    text-align: center;
+    background: #f5231c;
+}
+#pink{
+    font-size: 1.2em;
+    text-align: center;
+    background: #f518f5;
+}
+#General_Notes{
+    font-size: 1.2em;
+    text-align: center;
+    background: #707070;
+}
+
+
+#blue:hover {
+    font-size: 1.2em;
+    text-align: center;
+    background: #3473e7;
+}
+#orange:hover{
+    font-size: 1.2em;
+    text-align: center;
+    background: #f39519;
+}
+#green:hover{
+    font-size: 1.2em;
+    text-align: center;
+    background: #13dd6e;
+}
+#yellow:hover{
+    font-size: 1.2em;
+    text-align: center;
+    background: #dfdb15;
+}
+#red:hover{
+    font-size: 1.2em;
+    text-align: center;
+    background: #e71b14;
+}
+#pink:hover{
+    font-size: 1.2em;
+    text-align: center;
+    background: #e611e6;
+}
+#None:hover{
+    font-size: 1.2em;
+    text-align: center;
+    background: #575656;
+}
+.goal_center_text{
+    text-align: center;
+}
