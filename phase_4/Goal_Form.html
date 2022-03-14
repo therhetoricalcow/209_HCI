@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="./main.css">
+    <title>Goal Form</title>
+</head>
+<script>
+function calc_goal(){
+  num_days = days.length
+  //3 hours per credit recommended, 60 minutes in an hour
+  var num_credits = document.getElementById('num_credits')
+  console.log(num_credits.value)
+  num_credits = parseInt(num_credits.value)
+  if (Number.isInteger(num_credits)){
+    var weekly_minutes = num_credits * 3 * 60
+  }
+  else {
+    alert('Number of credits must be a whole positive integer')
+    console.log(`You have ${document.getElementById('num_credits').value} currently entered`)
+  }
+  rec_study = Math.round(weekly_minutes/num_days)
+  console.log(rec_study)
+  var minutes = (rec_study % 60)
+  var hours = (rec_study - (rec_study % 60))/ 60
+  if (num_days = 0) {
+    document.getElementById('study_rec_pops').innerHTML = 'Daily Rec: NA'
+  }
+  else {
+    document.getElementById('study_rec_pops').innerHTML = `Daily Rec: \n ${hours}hrs, ${minutes}min`
+  }
+    
+}
+
+function week_select(class_id) {
+    var elem = document.getElementById(class_id)
+    if (elem.style.background !== 'green'){
+      elem.style.background = 'green'
+      if (!days.includes(class_id)){
+        days.push(class_id)
+      }
+    }
+    else{
+      const index = days.indexOf(class_id);
+      if (index > -1) {
+        days.splice(index, 1); // 2nd parameter means remove one item only
+      }
+      elem.style.background = ''
+    }
+    console.log(days)
+    calc_goal()
+  } 
+
+function add_class_HTML(){
+  var class_array = JSON.parse(localStorage.getItem("classes"))
+  var node = document.getElementById("class_form");
+  for (var i = 0; i <class_array.length; i++ ){
+    node.insertAdjacentHTML('beforeEnd', `<option class = 'class_form' id= '${class_array[i]}''>${class_array[i]}</option>`);
+  }
+  node.insertAdjacentHTML('beforeEnd', `<option class = 'class_form' id= '${class_array[i]}''>General Notes</option>`);
+}
+
+function submit_goal(){ 
+  var days_to_study = JSON.parse(localStorage.getItem("weekdays-to-study"))
+  var class_sel = document.getElementById('class_form').value
+  var goal_drop = document.getElementById('goal_select').value
+  var study_goal_ar = JSON.parse(localStorage.getItem("study-goals"))
+  if ((goal_drop == 'Recommended Goal') && (Number.isInteger(rec_study))){
+    study_goal_ar[class_sel] = rec_study
+    console.log(study_goal_ar)
+    localStorage.setItem("study-goals", JSON.stringify(study_goal_ar))
+    //window.location.href = './study.html'
+  }
+  else{
+    manual_goal = document.getElementById('daily_study_min').value
+    manual_goal = parseInt(manual_goal)
+    if (Number.isInteger(manual_goal)){
+      study_goal_ar[class_sel] = manual_goal
+      localStorage.setItem("study-goals", JSON.stringify(study_goal_ar)) 
+      //window.location.href = './study.html'
+      
+    }
+    else{
+      alert('Personal goal entered must be whole number integer')
+    }
+  }
+}
+function leave(){
+  window.location.href = './study.html'
+}
+
+</script>
+<body>
+    <div class="container" style = 'text-indent: 10px; width: 750px; font-size: 20px; background-color : rgb(152, 201, 224);'>
+          <!--Class Select-->
+          <div class="Class Select">
+            <label >Select Class </label>
+            <select id = 'class_form' class = 'class_form_drop'>
+              <!--<option class = 'class_form' id= 'class_form_0' >Class</option> -->
+            </select>
+            <div class = "right" id = 'study_rec_pops' style = 'background-color:rgb(22, 233, 68); font-size: 30px;border: 2px solid black'> Daily Rec: NA</div>
+          </div>
+          <div class = "space">
+            <label >&nbsp</label>
+          </div>
+
+          <!--Number of Credits-->
+          <div class="Credits Select">
+            <label >Class Number of Credits: </label>
+            <input type="text" id="num_credits"  placeholder="(whole integer)">
+          </div>
+          <div class = "space">
+            <label >&nbsp</label>
+          </div>
+          
+          <!--Days of Week to Study-->
+          <div class="days_of_week">
+            <label >Select Days of Week to Study </label>
+          </div>
+          <div class="week_buttons">
+            <button id = "Monday" class="clear_goal_btn" onclick = "week_select('Monday')" style = 'width: 100px;''>Monday</button>
+            <button id = "Tuesday" class="clear_goal_btn" onclick = "week_select('Tuesday')" style = 'width: 100px;'>Tuesday</button>
+            <button id = "Wednesday" class="clear_goal_btn" onclick = "week_select('Wednesday')" style = 'width: 100px;'>Wednesday</button>
+            <button id = "Thursday" class="clear_goal_btn" onclick = "week_select('Thursday')" style = 'width: 100px;'>Thursday</button>
+            <button id = "Friday" class="clear_goal_btn" onclick = "week_select('Friday')" style = 'width: 100px;'>Friday</button>
+            <button id = "Saturday" class="clear_goal_btn" onclick = "week_select('Saturday')" style = 'width: 100px;'>Saturday</button>
+            <button id = "Sunday" class="clear_goal_btn" onclick = "week_select('Sunday')" style = 'width: 100px;'>Sunday</button>
+          </div>
+          <div class = "space">
+            <label >&nbsp</label>
+          </div>
+
+          <!--Which study goal to use selection-->
+          <div class="choose_goal">
+            <label >Type of Goal to Use:</label>
+            <select id = 'goal_select' class = 'goal_select'>
+              <option  id= 'recommended_goal' >Recommended Goal</option>
+              <option  id = 'own_goal'>My Own Goal</option>
+            </select>
+          </div>
+          <div class = "not-right" style = "padding: 0px 30px 0px 0px;">
+            <label >Daily Personal Study Goal (if using):</label>
+            <input type="text" id="daily_study_min"  placeholder="minutes">
+          </div>
+
+          
+          <div class = "space">
+            <label >&nbsp</label>
+          </div>
+         
+          
+          <div class="col-25">
+            <label for="subject">Optional Personal Objective</label>
+          </div>
+          <div class="col-75">
+            <textarea id="subject" name="subject" placeholder="What are you looking to get out of this class? What do want to acheive? " style="width:300px;"></textarea>
+          </div>
+          
+          <div class = "space">
+            <label >&nbsp</label>
+          </div>
+
+          <!--Submit Goal Button-->
+          <div class="right"  >
+            <button id="goal_form"  type="submit" onclick="submit_goal()">Add Class Goal</button>
+            <button onclick="leave()"> Back to Goals</button>
+          </div> 
+      </div>
+      <script>
+        add_class_HTML()
+        var days = []
+        var rec_study = 0
+      </script>
+</body>
+</html>
