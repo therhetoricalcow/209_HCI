@@ -1,0 +1,14 @@
+{% extends 'base.html' %}
+{% block content %}
+<h1>{% block title %} Suggestions {% endblock %} </h1>
+
+<h5>Metric: {{ metric }}</h4>
+    <h6>Score: {{ score }}</h4>
+        <h4>{{ note['class'] }}</h4>
+        <h4>{{ note['title'] }}</h4>
+        <h6 name = "text" value="{{ text }}">{{ text }}</h6>
+        <form class="form-group" action="{{ url_for('suggestions', id =  note['id']) }}" method="post">
+            <button type="submit" name="submit_button" class="btn btn-primary">Keep This</button>
+            <button type="submit" name="submit_button" class="btn btn-primary">Keep Old</button>
+        </form>
+        {% endblock %}

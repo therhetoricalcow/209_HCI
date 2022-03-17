@@ -1,0 +1,36 @@
+{% extends 'base.html' %}
+{% block content %}
+<h1>{% block title %} Research {% endblock %} </h1>
+
+<form class="form-group" action="{{ url_for('analytics') }}" method="post">
+    {% for note in notes %}
+
+    <input type="hidden" id="note_id" name="note_id" value="{{ note['id'] }}">
+
+    <div class="form-group">
+        <h4>Class: {{ note['class'] }}</h4>
+        <h4>Title: {{ note['title'] }}</h4>
+        <h6>Content: {{ note['content'] }}</h6>
+        <label for="metric_list">Metric List:</label>
+        <select name="metric">
+            {% for metric in metricList %}
+            <option {value="{{ metric }}" >{{ metric }}</option>
+            {% endfor %}
+        </select>
+        <input type="submit" name="submit_button" value="Get Metric">
+        <input type="submit" name="submit_button" value="Get Suggested">
+        <div class="form-group">
+            <label for="class">Intended Score</label>
+            <input type="text" name="intent_score" class="form-control"
+                value="{{ request.form['intent_score']}}">
+            </input>
+        </div>
+        <h6>Score:{{ score }}</h6>
+
+        <hr>
+
+    </div>
+    {% endfor %}
+</form>
+
+{% endblock %}
