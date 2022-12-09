@@ -1,1 +1,1 @@
-readme for js
+Our Project for the 209-Human Computer and Interaction Class. In our project we designed a website called EasyNote which was a website packed with features to simplify and assist you with note-taking.
